@@ -1,0 +1,132 @@
+<body>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,300&display=swap" rel="stylesheet">
+    <h1>Viewers</h1>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    <div class="box">
+        <h1>TYPE TEXT HERE</h1>
+        <textarea name="comment" id="comment" placeholder="Type something..."></textarea>
+    </div>
+    <h5 style="text-align: right;">* The changes are not synced with other users</h5>
+      <!-- Google Fonts -->
+      
+      
+      
+</body>
+<style>
+    html {
+  height: 100%;
+  background: #030303;
+}
+
+* {
+  font-family: 'Montserrat', sans-serif;
+  color: #ffffff;
+  letter-spacing: .05rem;
+}
+
+.box {
+  display: block;
+  width: 80%;
+  max-width: 900px;
+  margin: 20vh auto;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: 100;
+}
+
+textarea {
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  min-height: 8rem;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  line-height: 2rem;
+  font-weight: 300;
+  background:#222222;
+  border: none;
+  border-radius: 1rem;
+  outline: none;
+  box-shadow: 
+    18px 18px 30px #363636, 
+    -18px -18px 30px #333333;
+  resize: vertical;
+  transition: ease .2s;
+  cursor: pointer;
+}
+
+textarea::placeholder {
+  color: #04071a;
+}
+
+textarea:focus {
+  min-height: 12rem;
+  box-shadow: 
+    inset 18px 18px 30px #000000, 
+    inset -18px -18px 30px #363636;
+}
+
+/* Chrome/Opera/Safari */
+::-webkit-input-placeholder { 
+  color: transparent;
+}
+/* Firefox 19+ */
+::-moz-placeholder { 
+  color: transparent;
+}
+/* IE 10+ */
+:-ms-input-placeholder { 
+  color: transparent;
+}
+/* Firefox 18- */
+:-moz-placeholder { 
+  color: transparent;
+}
+
+textarea:placeholder-shown {
+  background: none;
+}
+
+    img {
+        border-radius: 50%;
+        width: 60px;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script>
+    var b= localStorage.getItem("token");
+var myname ; 
+if(b==null || b=="" || b==undefined ){
+    window.location.href="/login";
+ }
+
+else{
+    fetch("/verifyToken?jwt="+name).then(async(a)=>{
+    console.log(a);
+    if(a.status==200)
+      {
+            return a.json();
+      }
+    else{
+       await  localStorage.setItem("token","");
+       window.location.href="/login";
+    } 
+  }).then(blob=>{
+      myname = blob['username']["username"];
+     var socket = io();
+  socket.emit('UserName',myname);
+  socket.on('UserNameBrowser', function(msg){
+     console.log("A USER CONNECTED CALLED " + msg)
+    });
+  })
+}
+ 
+</script>

@@ -51,7 +51,7 @@ if(b==null || b=="" || b==undefined ){
  }
 }
 else{
-  fetch("/verifyToken:"+b).then(a=>{
+  fetch("/verifyToken?jwt="+b).then(a=>{
     console.log(a);
     if(a.status==200)
       window.location.href="/new";

@@ -1,50 +1,238 @@
+<body>
+   
+<div class="navigation">
+  
+	<a class="button" href="">
+  	<img id="displayPicture" >
+  
+  <div class="logout" onclick="logout()">LOGOUT</div>
+
+	</a>
+  
+</div>
+
+<div class="form__group field" style="display: flex;flex-flow: row wrap;align-items: center;">
+    <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
+    <label for="name" class="form__label">Document Name </label>
+    <button class="btn fourth" onclick="addDocument()">Create Doc</button>
+  </div>
+ 
 <main>
     <ol class="gradient-list">
-      <li>Untitled.doc</li>
-      <li>Aenean tincidunt elit at ipsum cursus, vitae interdum nulla suscipit.</li>
-      <li>Curabitur in orci vel risus facilisis accumsan.</li>
-      <li>Morbi eleifend tortor lacinia sapien sagittis, quis pellentesque felis egestas.</li>
-      <li>Aenean viverra dui quis leo lacinia fringilla.</li>
-      <li>Sed varius lectus ac condimentum egestas.</li>
-      <li>Maecenas faucibus lorem nec lorem posuere, a rhoncus velit porttitor.</li>
-      <li>Proin porta arcu ac elit malesuada pulvinar.</li>
-      <li>Phasellus vitae felis sit amet mi gravida volutpat.</li>
-      <li>Curabitur vulputate urna non efficitur interdum.</li>
-      <li>Curabitur dapibus enim in consectetur imperdiet.</li>
-      <li>Suspendisse consectetur nibh non condimentum porta.</li>
-      <li>Ut placerat diam in cursus aliquet.</li>
-      <li>Praesent vitae quam id tortor malesuada viverra ut at elit.</li>
-      <li>Vivamus feugiat justo id volutpat rutrum.</li>
-      <li>Nulla volutpat erat non mauris condimentum, nec consequat elit posuere.</li>
-      <li>Vestibulum eu risus efficitur, porta lacus a, mollis metus.</li>
-      <li>Maecenas finibus arcu vel urna commodo, ac bibendum massa vestibulum.</li>
-      <li>Praesent eleifend leo eget consectetur interdum.</li>
-      <li>Suspendisse et lectus gravida, interdum mauris aliquet, mattis purus.</li>
-      <li>In nec nisl feugiat, blandit odio non, vulputate neque.</li>
-      <li>Sed id felis mollis, bibendum orci a, condimentum augue.</li>
-      <li>Etiam eleifend ipsum nec nibh aliquam, non commodo risus eleifend.</li>
-      <li>Curabitur in ipsum eget lacus blandit maximus in at sem.</li>
-      <li>Curabitur sagittis ante nec libero maximus, ut imperdiet elit egestas.</li>
-      <li>Proin congue felis sed ultrices elementum.</li>
-      <li>Duis sit amet velit et lectus eleifend interdum non quis ex.</li>
-      <li>Praesent congue lectus a felis pharetra malesuada.</li>
-      <li>Sed vel mauris condimentum, egestas dolor eu, porttitor nisl.</li>
-      <li>Donec sed elit tincidunt, accumsan magna sed, facilisis libero.</li>
-      <li>Curabitur vel purus quis justo placerat euismod mollis ac arcu.</li>
-      <li>Sed eget mi et justo luctus mollis ut non augue.</li>
-      <li>Suspendisse sit amet lectus et magna euismod tempor.</li>
-      <li>Vestibulum accumsan velit et ipsum pellentesque, vitae ultricies erat blandit.</li>
-      <li>Pellentesque vel dolor ac risus efficitur convallis.</li>
-      <li>Maecenas feugiat quam at facilisis dapibus.</li>
-      <li>Cras commodo leo sit amet lacus lacinia, eget rutrum sem sodales.</li>
-      <li>Ut sit amet risus finibus, iaculis lectus sit amet, varius lectus.</li>
-      <li>Duis dignissim elit eget erat maximus luctus.</li>
     </ol>
   </main>
+</body>
   <script>
-      
-  </script>
+      function logout(){
+          localStorage.setItem("token","");
+          window.location.href="/login";
+      }
+      function addDocument(){
+         const newDoc =  document.querySelector("input.form__field").value;
+         if(newDoc=="" || newDoc==null || newDoc==undefined){
+             alert("Document Name empty");
+         }
+       fetch("/addDocument?name="+newDoc).then(res=>res.json()).then(a=>{
+           if(a["added"]==true){
+            document.querySelector('ol').innerHTML+='<li> <a href="/read/"'+newDoc+' style="text-decoration:none;color:black;">'+newDoc+'.doc</a></li>'
+           }
+           else{
+               alert("Some error occured");
+           }
+           
+       })
+        
+ 
+
+
+      }
+    var b= localStorage.getItem("token");
+    if(b==null || b=="" || b==undefined ){
+    window.location.href="/login";
+    }
+    else{
+      fetch("/verifyToken?jwt="+b).then(a=>{
+        console.log(a);
+        if(a.status==200)
+          {
+              return a.json();
+          }
+        else{
+           
+          localStorage.setItem("token","");
+          window.location.href="/login";
+        } 
+      }
+        ).then(blob=>{
+            console.log(blob['username']["username"])
+            document.querySelector("#displayPicture").src="https://api.adorable.io/avatars/285/"+blob['username']['username']+"@adorable.png"
+        })
+    }
+    document.querySelector('ol').innerHTML="";
+    fetch("/getAllDocuments").then(a=>a.json()).then(async (blob)=>{
+        await console.log("Here")
+        await console.log(blob["Files"])
+        for(const files of blob["Files"]){
+            document.querySelector('ol').innerHTML+=`<li> <a href="/read/:${files}" style="text-decoration:none;color:black;">${files}.doc</a></li>`
+        } 
+    }) 
+    
+    </script>
   <style>
+.btn {
+  box-sizing: border-box;
+  background-color: transparent;
+  border: 2px solid #e74c3c;
+  border-radius: 0.6em;
+  color: #e74c3c;
+  cursor: pointer;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 20%;
+  padding: 10px 20px;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+.btn:hover, .btn:focus {
+  color: #fff;
+  outline: 0;
+}
+.fourth {
+  border-color: #0ff1a6;
+  color: #fff;
+  background-image: -webkit-linear-gradient(45deg, #0ff1a6 50%, transparent 50%);
+  background-image: linear-gradient(45deg, #0ff1a6 50%, transparent 50%);
+  background-position: 100%;
+  background-size: 400%;
+  -webkit-transition: background 300ms ease-in-out;
+  transition: background 300ms ease-in-out;
+}
+.fourth:hover {
+  background-position: 0;
+} 
+      .form__group {
+  position: relative;
+  padding: 15px 0 0;
+  margin-top: 10px;
+  margin-left: 40%;
+  width: 20%;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 1.3rem;
+  color: #fff;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+.form__field::placeholder {
+  color: transparent;
+}
+.form__field:placeholder-shown ~ .form__label {
+  font-size: 1.3rem;
+  cursor: text;
+  top: 20px;
+}
+
+.form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: #9b9b9b;
+}
+
+.form__field:focus {
+  padding-bottom: 6px;
+  font-weight: 700;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #11998e, #38ef7d);
+  border-image-slice: 1;
+}
+.form__field:focus ~ .form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: #11998e;
+  font-weight: 700;
+}
+
+/* reset input */
+.form__field:required, .form__field:invalid {
+  box-shadow: none;
+}
+
+/* demo */
+
+
+      @import url(https://fonts.googleapis.com/css?family=Oswald:400);
+
+.navigation {
+  width: 100%;
+  background-color: black;
+}
+
+img {
+  width: 40px;
+  border-radius: 50px;
+  float: left;
+}
+
+.logout {
+  font-size: .8em;
+  font-family: 'Oswald', sans-serif;
+	position: relative;
+  right: -18px;
+  bottom: -4px;
+  overflow: hidden;
+  letter-spacing: 3px;
+  opacity: 0;
+  transition: opacity .45s;
+  -webkit-transition: opacity .35s;
+  
+}
+
+.button {
+	text-decoration: none;
+	float: right;
+  padding: 12px;
+  margin: 15px;
+  color: white;
+  width: 60px;
+  background-color: black;
+  transition: width .35s;
+  -webkit-transition: width .35s;
+  overflow: hidden
+}
+
+a:hover {
+  width: 150px;
+}
+
+a:hover .logout{
+  opacity: .9;
+}
+
+a {
+  
+  text-decoration: none;
+}
+
+
       /*** FONTS ***/
 @import url(https://fonts.googleapis.com/css?family=Montserrat:900|Raleway:400,400i,700,700i);
 /*** VARIABLES ***/
@@ -69,7 +257,7 @@ body {
 }
 
 body {
-  background-color: #fafafa;
+  background-color: black;
   color: #1d1f20;
   font-family: 'Raleway', sans-serif;
 }
