@@ -1,25 +1,126 @@
-<body>
+<body style="margin:100px 100px;">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100,300&display=swap" rel="stylesheet">
     <h1>Viewers</h1>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
-    <img src="https://api.adorable.io/avatars/285/shivam@adorable.png"/>
+    
+      <div id="avatars">
+       
+      </div>
     <div class="box">
         <h1>TYPE TEXT HERE</h1>
         <textarea name="comment" id="comment" placeholder="Type something..."></textarea>
     </div>
-    <h5 style="text-align: right;">* The changes are not synced with other users</h5>
+    <h5 style="text-align: right;">* The changes in text are not synced with other users</h5>
       <!-- Google Fonts -->
       
       
       
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script>
+
+    document.querySelector('#avatars').innerHTML=""
+    var url = window.location.href;
+    var urlobject = new URL(url);
+    var c = urlobject.searchParams.get("docname");
+    console.log(c)
+    /*
+     fetch("/getUsers?docname="+c).then((a)=>{
+            console.log(a)
+            
+                 return   a.json()
+
+        }).then(async (blob)=>{
+        
+        if(blob[0]==false){
+            alert("Document not found.");
+            window.location.href="/new"
+        }
+        else{
+        for(const files of blob){
+            document.querySelector('#avatars').innerHTML+=` <div class="tooltip"><img src="https://api.adorable.io/avatars/285/${files}@adorable.png"/>
+        <span class="tooltiptext">${files} <br> 17:09</span>
+      </div>`
+        }} 
+    })*/
+    var peoples = [] ;
+    var b= localStorage.getItem("token");
+var myname ; 
+if(b==null || b=="" || b==undefined ){
+    window.location.href="/login";
+ }
+
+else{
+    fetch("/verifyToken?jwt="+b).then(async(a)=>{
+    
+            return a.json();
+      
+   
+  }).then(blob=>{
+        if(blob[0]==false){
+          localStorage.setItem("token","");
+       window.location.href="/login";
+        }
+
+        else{
+
+      myname = blob['username']["username"];
+     var socket = io();
+  socket.emit('UserName',{name:myname , channel : c});
+  socket.on('newConnection', function(msg){
+    peoples=msg;
+     console.log(msg)
+     document.querySelector('#avatars').innerHTML=""
+     for(const files of msg){
+            document.querySelector('#avatars').innerHTML+=` <div class="tooltip"><img src="https://api.adorable.io/avatars/285/${files}@adorable.png"/>
+        <span class="tooltiptext">${files} <br> 17:09</span>
+      </div>`
+        }
+    });
+    socket.on('disconnectClient', function(msg){
+     console.log(peoples)
+     document.querySelector('#avatars').innerHTML=""
+     for(const files of peoples){
+       if(files!=msg){
+            document.querySelector('#avatars').innerHTML+=` <div class="tooltip"><img src="https://api.adorable.io/avatars/285/${files}@adorable.png"/>
+        <span class="tooltiptext">${files} <br> 17:09</span>
+      </div>`
+    }
+        }
+    });
+    }
+  })
+}
+
+ 
+</script>
 <style>
+    .tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    width: 120px;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px; 
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
     html {
   height: 100%;
   background: #030303;
@@ -100,33 +201,3 @@ textarea:placeholder-shown {
         width: 60px;
     }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-<script>
-    var b= localStorage.getItem("token");
-var myname ; 
-if(b==null || b=="" || b==undefined ){
-    window.location.href="/login";
- }
-
-else{
-    fetch("/verifyToken?jwt="+name).then(async(a)=>{
-    console.log(a);
-    if(a.status==200)
-      {
-            return a.json();
-      }
-    else{
-       await  localStorage.setItem("token","");
-       window.location.href="/login";
-    } 
-  }).then(blob=>{
-      myname = blob['username']["username"];
-     var socket = io();
-  socket.emit('UserName',myname);
-  socket.on('UserNameBrowser', function(msg){
-     console.log("A USER CONNECTED CALLED " + msg)
-    });
-  })
-}
- 
-</script>

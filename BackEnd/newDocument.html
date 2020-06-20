@@ -34,7 +34,7 @@
          }
        fetch("/addDocument?name="+newDoc).then(res=>res.json()).then(a=>{
            if(a["added"]==true){
-            document.querySelector('ol').innerHTML+='<li> <a href="/read/"'+newDoc+' style="text-decoration:none;color:black;">'+newDoc+'.doc</a></li>'
+            document.querySelector('ol').innerHTML+=`<li> <a href="/read?docname=${newDoc}" style="text-decoration:none;color:black;">${newDoc}.doc</a></li>`
            }
            else{
                alert("Some error occured");
@@ -73,7 +73,7 @@
         await console.log("Here")
         await console.log(blob["Files"])
         for(const files of blob["Files"]){
-            document.querySelector('ol').innerHTML+=`<li> <a href="/read/:${files}" style="text-decoration:none;color:black;">${files}.doc</a></li>`
+            document.querySelector('ol').innerHTML+=`<li> <a href="/read?docname=${files}" style="text-decoration:none;color:black;">${files}.doc</a></li>`
         } 
     }) 
     

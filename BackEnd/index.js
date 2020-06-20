@@ -17,6 +17,8 @@ const jwtExpirySeconds = 300
 const app = express()
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+var idMapper= {} ;
+var channelMapper = {};
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors())
 app.engine('html', require('ejs').renderFile);
@@ -115,7 +117,7 @@ app.get("/verifyToken",(req,res)=>{
                 })
             });
     }else {
-        res.sendStatus(403);
+        res.json([false]);
     }
 })
 
@@ -188,17 +190,129 @@ app.get("/getAllDocuments",(req,res)=>{
 
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
+   var userData ; 
     socket.on('disconnect', function () {
-        console.log('A user disconnected');
+        
+      
+        io.sockets.in(channelMapper[socket.id]).emit('disconnectClient', idMapper[socket.id]);
+        socket.leave(channelMapper[socket.id]);
+        /*
+        fetch("https://api.jsonbin.io/b/5eee064697cb753b4d146011",{headers: {
+        'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+      }}).then(a=>a.json()).then( (blob)=>{
+          blob[userData['channel']]=blob[userData['channel']].filter(data=>{
+              if(data!=userData['name'])
+              return data;
+          })
+          fetch("https://api.jsonbin.io/b/5eee064697cb753b4d146011", {
+     
+            body:  JSON.stringify(blob),
+            headers: {
+                "Content-Type":"application/json",
+                'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                'versioning':'false'
+           },
+            method: "PUT"
+                
+          })
+
+
+      })
+      */
      });
+     
      socket.on('UserName', function (msg) {
-        console.log('A user called'+msg+" connected");
-        io.emit("UserNameBrowser",msg);
-     });
+        console.log(msg);
+
+        socket.join(msg["channel"]);
+        channelMapper[socket.id]=msg['channel'];
+        idMapper[socket.id]=msg['name'];
+        userData = msg;
+        idMapper[socket.id]=msg['name'];
+        io.of('/').adapter.clients([msg['channel']], (err, client) => {
+            clients = client.map(data=>{
+                return idMapper[data];
+            })
+            io.sockets.in(msg["channel"]).emit('newConnection', clients);
+            console.log(clients)
+          });
+         
+        
+/*
+       fetch("https://api.jsonbin.io/b/5eee064697cb753b4d146011",{headers: {
+        'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+      }}).then(a=>a.json()).then( (blob)=>{
+          blob[msg['channel']].push(msg['name']);
+          fetch("https://api.jsonbin.io/b/5eee064697cb753b4d146011", {
+     
+            body:  JSON.stringify(blob),
+            headers: {
+                "Content-Type":"application/json",
+                'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                'versioning':'false'
+           },
+            method: "PUT"
+                
+          })
+
+
+      })*/
   });
-  
-app.get("/read/:sessionName",(req,res)=>{
+})
+app.get("/read",(req,res)=>{
     res.render(path.join(__dirname+'/session.html'));
+})
+
+
+app.get("/getUsers",(req,res)=>{
+    fetch("https://api.jsonbin.io/b/5eee064697cb753b4d146011",{headers: {
+        'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+      }}).then(a=>a.json()).then( (blob)=>{
+          var found =false;
+            if(blob[req.query.docname]==undefined){
+                fetch("https://api.jsonbin.io/b/5eede831e2ce6e3b2c761e3c",{headers: {
+                    'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                  }}).then(a=>a.json()).then( (bob)=>{
+
+
+
+                    for(const files of bob["Files"]){
+                        if(files==req.query.docname){
+                            found=true;
+                            break;
+                        }
+                    } 
+                    if(found){
+                        blob[req.query.docname]=[];
+                    fetch("https://api.jsonbin.io/b/5eee064697cb753b4d146011", {
+                        body:  JSON.stringify(blob),
+                        headers: {
+                            "Content-Type":"application/json",
+                            'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                            'versioning':'false'
+                       },
+                        method: "PUT"
+                            
+                      }).then(response=>{
+                                 res.json([false]);
+                             
+                      })
+                    }
+                    else{
+                        res.json([false]);
+                    }
+
+                        
+                  })
+                   
+                    
+                
+                
+            }else{
+                res.json(blob[req.query.docname]);
+                
+            }
+           
+      })
 })
 http.listen(8000)
