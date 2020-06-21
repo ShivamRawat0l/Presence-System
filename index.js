@@ -234,7 +234,7 @@ app.get("/log", (req, res) => {
         if (blob[req.query.docname] == undefined || blob[req.query.docname] == null)
             res.send("File Not Found")
         else
-            res.json(blob[req.query.docname]);
+        res.render(path.join(__dirname + '/logs.html'),{name : req.query.docname, data: blob[req.query.docname]});
     })
 })
 

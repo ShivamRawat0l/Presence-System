@@ -1,6 +1,7 @@
 <body style="margin:100px 100px;">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100,300&display=swap" rel="stylesheet">
-    <h1>Viewers</h1>
+    <a href="/new" style="margin-right: 30px;"> BACK  </a><a onclick="openLogs()" href="#" style="text-align: right;">  LOGS</a>
+    <h1>Viewers</h1> 
     
       <div id="avatars">
        
@@ -22,7 +23,9 @@
     var url = window.location.href;
     var urlobject = new URL(url);
     var c = urlobject.searchParams.get("docname");
-    console.log(c)
+    function openLogs(){
+      window.location.href = "/log?docname="+c;
+    }
     /*
      fetch("/getUsers?docname="+c).then((a)=>{
             console.log(a)
@@ -94,6 +97,9 @@ else{
  
 </script>
 <style>
+  h4:hover{
+    cursor: pointer;
+  }
     .tooltip {
   position: relative;
   display: inline-block;
@@ -140,8 +146,8 @@ else{
 }
 
 h1 {
-  font-size: 3rem;
-  font-weight: 100;
+  font-size:3rem;
+  font-weight: 900;
 }
 
 textarea {
