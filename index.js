@@ -4,6 +4,7 @@ const handlebars = require('express-handlebars');
 var bodyParser = require("body-parser");
 const path = require('path')
 const fetch = require('node-fetch');
+var PORT = process.env.PORT || 8000
 const session = require('express-session')
 const jwt = require("jsonwebtoken");
 var cors = require('cors')
@@ -315,4 +316,4 @@ app.get("/read", (req, res) => {
 })
 
 
-http.listen(8000)
+http.listen(PORT)
