@@ -7,6 +7,8 @@ const fetch = require('node-fetch');
 var PORT = process.env.PORT || 8000
 const session = require('express-session')
 const jwt = require("jsonwebtoken");
+require('dotenv').config()
+
 var cors = require('cors')
 const {
     type
@@ -51,7 +53,7 @@ app.get("/login", (req, res) => {
 app.post("/register", (req, res) => {
     fetch("https://api.jsonbin.io/b/5eef10bb2406353b2e09bb11", {
         headers: {
-            'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+            'secret-key': process.env.SECRET,
         }
     }).then(a => a.json()).then(async blob => {
         var user = {
@@ -81,7 +83,7 @@ app.post("/register", (req, res) => {
                 body: JSON.stringify(blob),
                 headers: {
                     "Content-Type": "application/json",
-                    'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                    'secret-key': process.env.SECRET,
                     'versioning': 'false'
                 },
                 method: "PUT"
@@ -113,7 +115,7 @@ app.post("/login", (req, res) => {
     var accountFound = false;
     fetch("https://api.jsonbin.io/b/5eef10bb2406353b2e09bb11", {
         headers: {
-            'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+            'secret-key':process.env.SECRET,
         }
     }).then(a => a.json()).then(blob => {
         for (const item of blob["Config"]) {
@@ -168,7 +170,7 @@ app.get("/new", (req, res) => {
 app.get("/addDocument", (req, res) => {
     fetch("https://api.jsonbin.io/b/5eede831e2ce6e3b2c761e3c", {
         headers: {
-            'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+            'secret-key': process.env.SECRET,
         }
     }).then(a => a.json()).then(async (blob) => {
 
@@ -187,7 +189,7 @@ app.get("/addDocument", (req, res) => {
                 body: JSON.stringify(blob),
                 headers: {
                     "Content-Type": "application/json",
-                    'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                    'secret-key': process.env.SECRET,
                     'versioning': 'false'
                 },
                 method: "PUT"
@@ -217,7 +219,7 @@ app.get("/addDocument", (req, res) => {
 app.get("/getAllDocuments", (req, res) => {
     fetch("https://api.jsonbin.io/b/5eede831e2ce6e3b2c761e3c", {
         headers: {
-            'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+            'secret-key': process.env.SECRET,
         }
     }).then(a => a.json()).then(async (blob) => {
         res.json(blob);
@@ -228,7 +230,7 @@ app.get("/getAllDocuments", (req, res) => {
 app.get("/log", (req, res) => {
     fetch("https://api.jsonbin.io/b/5eef1285e2ce6e3b2c76a876", {
         headers: {
-            'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+            'secret-key': process.env.SECRET,
         }
     }).then(a => a.json()).then(async (blob) => {
         if (blob[req.query.docname] == undefined || blob[req.query.docname] == null)
@@ -247,7 +249,7 @@ io.on('connection', (socket) => {
         socket.leave(channelMapper[socket.id]);
         fetch("https://api.jsonbin.io/b/5eef1285e2ce6e3b2c76a876", {
             headers: {
-                'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                'secret-key': process.env.SECRET,
             }
         }).then(a => a.json()).then(async (blob) => {
             if(blob[channelMapper[socket.id]]==undefined || blob[channelMapper[socket.id]]==null)
@@ -259,7 +261,7 @@ io.on('connection', (socket) => {
                 body: JSON.stringify(blob),
                 headers: {
                     "Content-Type": "application/json",
-                    'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                    'secret-key': process.env.SECRET,
                     'versioning': 'false'
                 },
                 method: "PUT"
@@ -287,7 +289,7 @@ io.on('connection', (socket) => {
 
         fetch("https://api.jsonbin.io/b/5eef1285e2ce6e3b2c76a876", {
             headers: {
-                'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                'secret-key':process.env.SECRET,
             }
         }).then(a => a.json()).then(async (blob) => {
             if(blob[channelMapper[socket.id]]==undefined || blob[channelMapper[socket.id]]==null)
@@ -299,7 +301,7 @@ io.on('connection', (socket) => {
                 body: JSON.stringify(blob),
                 headers: {
                     "Content-Type": "application/json",
-                    'secret-key': '$2b$10$TM5cAtXueg31IxToas.zuu2NL2qiVyKXqpcAoCJ4kHY31iA/NiZ9i',
+                    'secret-key': process.env.SECRET,
                     'versioning': 'false'
                 },
                 method: "PUT"
