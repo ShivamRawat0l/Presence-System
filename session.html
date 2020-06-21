@@ -72,7 +72,7 @@ else{
      document.querySelector('#avatars').innerHTML=""
      for(const files of msg){
             document.querySelector('#avatars').innerHTML+=` <div class="tooltip"><img src="https://api.adorable.io/avatars/285/${files}@adorable.png"/>
-        <span class="tooltiptext">${files} <br> 17:09</span>
+        <span class="tooltiptext">${files}</span>
       </div>`
         }
     });
@@ -82,7 +82,7 @@ else{
      for(const files of peoples){
        if(files!=msg){
             document.querySelector('#avatars').innerHTML+=` <div class="tooltip"><img src="https://api.adorable.io/avatars/285/${files}@adorable.png"/>
-        <span class="tooltiptext">${files} <br> 17:09</span>
+        <span class="tooltiptext">${files}</span>
       </div>`
     }
         }
